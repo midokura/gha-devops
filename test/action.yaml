@@ -1,0 +1,28 @@
+name: Test
+description: > 
+  Action for testing purposes
+
+
+  Example:
+
+  ```
+
+  - name: Test
+    uses: midokura/gha-devops/test@main
+    with:
+      testString: Hello!
+  ```
+
+inputs:
+  testString:
+    description: String for testing
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Test
+      shell: bash
+      run: | 
+        echo "Test string: ${{ inputs.testString }}"
+      
