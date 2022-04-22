@@ -17,7 +17,8 @@ description: >
 inputs:
   k8sNS:
     description: Kubernetes Namespace
-    required: true
+    required: false
+    default: default
   secretName:
     description: Name for the new secret
     required: true
