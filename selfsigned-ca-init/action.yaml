@@ -1,0 +1,37 @@
+name: Self signed CA init
+description: >
+  Action for setting up a self signed CA authority. Requires Kubernetes running
+
+
+  Example:
+
+  ```
+
+  - name: Self signed CA init
+    uses: midokura/gha-devops/selfsigned-ca-init@main
+      with:
+        namespace: 'my-namespace'
+
+  ```
+
+inputs:
+  cert_dir:
+    description: DockerHub registry username
+    required: false
+    default: ''
+  namespace:
+    description: Namespace where certificates will be created
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Create CA
+      shell: bash
+      run: | 
+        envsubst < ${{ github.action_path }}/selfsigned-ca.yaml | kubectl apply -f -
+        sleep 5
+        kubectl get secret -n "${NAMESPACE}" root-ca-secret -o yaml
+      env:
+        NAMESPACE: ${{ inputs.namespace }}
+        CERT_DIR: ${{ inputs.cert_dir }}

@@ -54,6 +54,12 @@ runs:
         helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
         helm repo update
         helm install nginx-ingress ingress-nginx/ingress-nginx --wait --atomic --create-namespace --namespace=nginx-ingress --timeout=5m
+    - name: Install cert-manager
+      shell: bash
+      run: |
+        helm repo add jetstack https://charts.jetstack.io
+        helm repo update
+        helm install cert-manager -n cert-manager --create-namespace --wait --timeout=5m jetstack/cert-manager --set prometheus.enabled=false  --set installCRDs=true
     - name: Push images to kind
       if: ${{ inputs.dockerLocalImages != '' }}
       shell: bash
