@@ -51,16 +51,16 @@ runs:
     - name: Install metallb
       shell: bash
       run: | 
-        helm install metallb metallb/metallb --wait --atomic --create-namespace --namespace=metallb --timeout=5m \
+        helm install metallb metallb/metallb --wait --atomic --create-namespace --namespace=metallb --timeout=10m \
           -f ${{ github.action_path }}/helm-metallb-values.yaml
     - name: Install nginx-ingress
       shell: bash
       run: | 
-        helm install nginx-ingress ingress-nginx/ingress-nginx --wait --atomic --create-namespace --namespace=nginx-ingress --timeout=5m
+        helm install nginx-ingress ingress-nginx/ingress-nginx --wait --atomic --create-namespace --namespace=nginx-ingress --timeout=10m
     - name: Install cert-manager
       shell: bash
       run: |
-        helm install cert-manager -n cert-manager --create-namespace --wait --timeout=5m jetstack/cert-manager --set prometheus.enabled=false  --set installCRDs=true
+        helm install cert-manager -n cert-manager --create-namespace --wait --timeout=10m jetstack/cert-manager --set prometheus.enabled=false  --set installCRDs=true
     - name: Push images to kind
       if: ${{ inputs.dockerLocalImages != '' }}
       shell: bash
