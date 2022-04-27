@@ -30,8 +30,17 @@ runs:
       shell: bash
       run: | 
         envsubst < ${{ github.action_path }}/selfsigned-ca.yaml | kubectl apply -f -
-        sleep 5
-        kubectl get secret -n "${NAMESPACE}" root-ca-secret -o yaml
+        until kubectl get secret -n "${NAMESPACE}" root-ca-secret; do
+          echo Waiting for root-ca cert...
+          sleep 2
+        done
+        if [ "${CERT_DIR}" != '' ]; then
+          mkdir -p "${CERT_DIR}"
+          for FILE in ca.crt tls.crt tls.key; do
+            kubectl get secrets -n "${NAMESPACE}" root-ca-secret -o json | jq -r '.data."'${FILE}'"' > "${CERT_DIR}/${FILE}"
+          done
+          ls -l "${CERT_DIR}"
+        fi
       env:
         NAMESPACE: ${{ inputs.namespace }}
         CERT_DIR: ${{ inputs.cert_dir }}
