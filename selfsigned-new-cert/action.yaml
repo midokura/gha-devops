@@ -41,15 +41,14 @@ runs:
       shell: bash
       run: | 
         envsubst < ${{ github.action_path }}/selfsigned-cert.yaml | kubectl apply -f -
-        #until kubectl get secret -n "${NAMESPACE}" root-ca-secret; do
-        #echo Waiting for root-ca cert...
-        #  sleep 2
-        #done
-        sleep 10; kubectl get secret -n ${NAMESPACE}
+        until kubectl get secret -n "${NAMESPACE}" ${CERT_NAME}-secret 2>/dev/null ; do
+          echo Waiting for ${CERT_NAME}-secret ...
+          sleep 2
+        done
         if [ "${CERT_DIR}" != '' ]; then
           mkdir -p "${CERT_DIR}"
-          for FILE in ca.crt tls.crt tls.key; do
-            kubectl get secrets -n "${NAMESPACE}" root-ca-secret -o json | jq -r '.data."'${FILE}'"' > "${CERT_DIR}/${FILE}"
+          for FILE in tls.crt tls.key; do
+            kubectl get secret -n "${NAMESPACE}" ${CERT_NAME}-secret -o json | jq -r '.data."'${FILE}'"' > "${CERT_DIR}/${CERT_NAME}-${FILE}"
           done
           ls -l "${CERT_DIR}"
         fi
