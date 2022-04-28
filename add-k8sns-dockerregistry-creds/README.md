@@ -23,7 +23,7 @@ Example:
 
 | parameter | description | required | default |
 | - | - | - | - |
-| k8sNS | Kubernetes Namespace | `true` |  |
+| k8sNS | Kubernetes Namespace | `false` | default |
 | secretName | Name for the new secret | `true` |  |
 
 
