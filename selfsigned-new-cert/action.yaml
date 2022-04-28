@@ -22,13 +22,15 @@ description: >
 inputs:
   cert_name:
     description: Common name for the new certificate
-    required: true
+    required: false
   cert_dir:
     description: Directory to export recently created certificate
-    required: true
+    required: false
+    default: certs
   namespace:
     description: Namespace where certificates will be created
-    required: true
+    required: false
+    default: default
   dns_name:
     description: DNS name to be added to the certificate
     required: false
