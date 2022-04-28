@@ -1,5 +1,7 @@
 # GitHub Actions: midokura/gha-devops/selfsigned-ca-init
 
+[Index](../gha.md)
+
 <!-- action-docs-description -->
 ## Description
 

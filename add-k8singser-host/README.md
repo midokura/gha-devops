@@ -1,4 +1,6 @@
-# GitHub Actions: midokura/gha/add-kbsingser-host
+# GitHub Actions: midokura/gha-devops/add-kbsingser-host
+
+[Index](../gha.md)
 
 <!-- action-docs-description -->
 ## Description

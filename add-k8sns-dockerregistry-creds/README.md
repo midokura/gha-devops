@@ -1,4 +1,6 @@
-# GitHub Actions: midokura/gha/add-k8sns-dockerregistry-creds
+# GitHub Actions: midokura/gha-devops/add-k8sns-dockerregistry-creds
+
+[Index](../gha.md)
 
 <!-- action-docs-description -->
 ## Description

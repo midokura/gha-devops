@@ -1,5 +1,7 @@
 # GitHub Actions: midokura/gha-devops/selfsigned-new-cert
 
+[Index](../gha.md)
+
 <!-- action-docs-description -->
 ## Description
 
