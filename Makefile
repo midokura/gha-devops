@@ -27,4 +27,4 @@ gen-docs:
 			echo "|$$gha|$$(cat ./$$gha/action.yaml | yq .description | head -n1)|[./$$gha/README.md](./$$gha/README.md)|" >> gha.md; \
 		fi; \
 	done;
-	@echo '\n\n' >> gha.md;
+	@echo "\n\n**Auto generated on: $$(date)**\n\n" >> gha.md;
