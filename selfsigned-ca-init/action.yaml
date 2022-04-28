@@ -21,7 +21,8 @@ inputs:
     default: ''
   namespace:
     description: Namespace where certificates will be created
-    required: true
+    required: default
+    default: default
 
 runs:
   using: composite
