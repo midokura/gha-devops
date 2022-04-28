@@ -1,0 +1,59 @@
+name: Self signed new cert request
+description: >
+  Action for creating a new certificate signed by a previously created CA
+
+
+  Example:
+
+  ```
+
+  - name: Self signed CA init
+    uses: midokura/gha-devops/selfsigned-ca-init@main
+      with:
+        namespace: 'my-namespace'
+  - name: Self signed new cert
+    uses: midokura/gha-devops/selfsigned-new-cert@main
+      with:
+        namespace: 'my-namespace'
+        cert_name: 'my-cert'
+
+  ```
+
+inputs:
+  cert_name:
+    description: Common name for the new certificate
+    required: true
+  cert_dir:
+    description: Directory to export recently created certificate
+    required: true
+  namespace:
+    description: Namespace where certificates will be created
+    required: true
+  dns_name:
+    description: DNS name to be added to the certificate
+    required: false
+    default: my-cert.example.com
+
+runs:
+  using: composite
+  steps:
+    - name: Create new Certificate
+      shell: bash
+      run: | 
+        envsubst < ${{ github.action_path }}/selfsigned-cert.yaml | kubectl apply -f -
+        until kubectl get secret -n "${NAMESPACE}" ${CERT_NAME}-secret 2>/dev/null ; do
+          echo Waiting for ${CERT_NAME}-secret ...
+          sleep 2
+        done
+        if [ "${CERT_DIR}" != '' ]; then
+          mkdir -p "${CERT_DIR}"
+          for FILE in tls.crt tls.key; do
+            kubectl get secret -n "${NAMESPACE}" ${CERT_NAME}-secret -o json | jq -r '.data."'${FILE}'"' > "${CERT_DIR}/${CERT_NAME}-${FILE}"
+          done
+          ls -l "${CERT_DIR}"
+        fi
+      env:
+        NAMESPACE: ${{ inputs.namespace }}
+        CERT_NAME: ${{ inputs.cert_name }}
+        CERT_DIR: ${{ inputs.cert_dir }}
+        DNS_NAME: ${{ inputs.dns_name }}
