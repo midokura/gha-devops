@@ -16,9 +16,9 @@ jobs:
       - name: Run yaml lint
         uses: karancode/yamllint-github-action@v2.0.0
         with: 
-          yamllint_file_or_dir: 'setup-kind'
-          yamllint_strict: true
-          yamllint_comment: true
+          #yamllint_file_or_dir: 'setup-kind'
+          yamllint_strict: false
+          yamllint_comment: false
 
       #- name: Run actionlint
       #  uses: reviewdog/action-actionlint@v1
