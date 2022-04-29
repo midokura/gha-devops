@@ -1,3 +1,4 @@
+---
 name: Self signed new cert request
 description: >
   Action for creating a new certificate signed by a previously created CA

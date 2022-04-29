@@ -1,3 +1,4 @@
+---
 name: Setup kind
 description: >
   Action for setting up a kind k8s cluster

@@ -1,3 +1,4 @@
+---
 name: Self signed CA init
 description: >
   Action for setting up a self signed CA authority. Requires Kubernetes running

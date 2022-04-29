@@ -1,3 +1,4 @@
+---
 name: Add k8s ingress & services to host
 description: > 
   Action to add to the GitHub Runner /etc/hosts file the main domain of the k8s ingress controller and the exposed services

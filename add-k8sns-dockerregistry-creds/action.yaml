@@ -1,3 +1,4 @@
+---
 name: Add k8s Namespace docker registry creds
 description: > 
   Action to add to a k8s Namespace docker registry creds as a secret
