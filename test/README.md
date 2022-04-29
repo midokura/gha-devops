@@ -1,4 +1,6 @@
-# GitHub Actions: midokura/gha/test
+# GitHub Actions: midokura/gha-devops/test
+
+[Index](../gha.md)
 
 <!-- action-docs-description -->
 ## Description

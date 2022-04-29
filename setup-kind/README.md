@@ -1,4 +1,6 @@
-# GitHub Actions: midokura/gha/setup-kind
+# GitHub Actions: midokura/gha-devops/setup-kind
+
+[Index](../gha.md)
 
 <!-- action-docs-description -->
 ## Description
