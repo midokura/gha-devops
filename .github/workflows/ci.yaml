@@ -8,15 +8,14 @@ on:
 jobs:
 
   lint:
-    #runs-on: self-hosted
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Run yaml lint
         uses: karancode/yamllint-github-action@v2.0.0
         with: 
-          # yamllint_file_or_dir: 'setup-kind'
           yamllint_strict: false
+          yamllint_config_filepath: ./.yamllint.yaml
           yamllint_comment: false
 
       # - name: Run actionlint
