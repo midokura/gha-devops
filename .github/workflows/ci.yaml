@@ -1,0 +1,19 @@
+---
+name: GitHub Actions lint
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run yaml lint
+        uses: karancode/yamllint-github-action@v2.0.0
+        with:
+          yamllint_strict: false
+          yamllint_config_filepath: ./.yamllint.yaml
+          yamllint_comment: true

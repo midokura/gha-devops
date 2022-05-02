@@ -1,16 +1,17 @@
+---
 name: Test nested
-description: > 
+description: >
   Action for testing purposes with nested test action
 
 
   Example:
 
   ```
-  
+
   - name: Test nested
     uses: midokura/gha-devops/test-nested@main
     with:
-      testString: Helo nested! 
+      testString: Helo nested!
   ```
 
 inputs:
@@ -24,4 +25,4 @@ runs:
     - name: Test nested
       uses: midokura/gha-devops/test@main
       with:
-          testString: ${{ inputs.testString }}
+        testString: ${{ inputs.testString }}

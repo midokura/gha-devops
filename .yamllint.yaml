@@ -1,0 +1,12 @@
+extends: default
+
+ignore: |
+  .yamllint.yaml
+
+rules:
+  truthy: disable
+  line-length:
+    max: 160
+    level: warning
+  indentation:
+    indent-sequences: whatever

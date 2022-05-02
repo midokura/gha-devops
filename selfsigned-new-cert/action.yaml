@@ -1,3 +1,4 @@
+---
 name: Self signed new cert request
 description: >
   Action for creating a new certificate signed by a previously created CA
@@ -39,9 +40,9 @@ runs:
   steps:
     - name: Create new Certificate
       shell: bash
-      run: | 
+      run: |
         envsubst < ${{ github.action_path }}/selfsigned-cert.yaml | kubectl apply -f -
-        until kubectl get secret -n "${NAMESPACE}" ${CERT_NAME}-secret 2>/dev/null ; do
+        until kubectl get secret -n "${NAMESPACE}" ${CERT_NAME}-secret 2>/dev/null; do
           echo Waiting for ${CERT_NAME}-secret ...
           sleep 2
         done

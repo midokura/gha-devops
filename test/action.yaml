@@ -1,5 +1,6 @@
+---
 name: Test
-description: > 
+description: >
   Action for testing purposes
 
 
@@ -23,6 +24,5 @@ runs:
   steps:
     - name: Test
       shell: bash
-      run: | 
+      run: |
         echo "Test string: ${{ inputs.testString }}"
-      

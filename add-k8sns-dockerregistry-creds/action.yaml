@@ -1,5 +1,6 @@
+---
 name: Add k8s Namespace docker registry creds
-description: > 
+description: >
   Action to add to a k8s Namespace docker registry creds as a secret
 
 
@@ -11,7 +12,7 @@ description: >
     uses: midokura/gha-devops/add-k8sns-dockerregistry-creds@main
     with:
       k8sNS: tb
-      secretName: dockerregistry-creds    
+      secretName: dockerregistry-creds
   ```
 
 inputs:
@@ -28,7 +29,7 @@ runs:
   steps:
     - name: Create k8s Namespace
       shell: bash
-      run: | 
+      run: |
         k8sNS=$(kubectl get namespace ${{ inputs.k8sNS }} --ignore-not-found);
         if [[ ! "$k8sNS" ]]; then
           kubectl create namespace ${{ inputs.k8sNS }}

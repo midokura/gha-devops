@@ -1,3 +1,4 @@
+---
 name: Self signed CA init
 description: >
   Action for setting up a self signed CA authority. Requires Kubernetes running
@@ -28,7 +29,7 @@ runs:
   steps:
     - name: Create CA
       shell: bash
-      run: | 
+      run: |
         envsubst < ${{ github.action_path }}/selfsigned-ca.yaml | kubectl apply -f -
         until kubectl get secret -n "${NAMESPACE}" root-ca-secret; do
           echo Waiting for root-ca cert...

@@ -1,3 +1,4 @@
+---
 name: Setup kind
 description: >
   Action for setting up a kind k8s cluster
@@ -40,22 +41,22 @@ runs:
       uses: helm/kind-action@v1.2.0
       with:
         cluster_name: kind
-    # TODO: DockerHub pull rate limit    
+    # TODO: DockerHub pull rate limit
     - name: Helm repos
       shell: bash
-      run: | 
+      run: |
         helm repo add metallb https://metallb.github.io/metallb
         helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
         helm repo add jetstack https://charts.jetstack.io
         helm repo update
     - name: Install metallb
       shell: bash
-      run: | 
+      run: |
         helm install metallb metallb/metallb --wait --atomic --create-namespace --namespace=metallb --timeout=10m \
           -f ${{ github.action_path }}/helm-metallb-values.yaml
     - name: Install nginx-ingress
       shell: bash
-      run: | 
+      run: |
         helm install nginx-ingress ingress-nginx/ingress-nginx --wait --atomic --create-namespace --namespace=nginx-ingress --timeout=10m
     - name: Install cert-manager
       shell: bash
@@ -67,5 +68,4 @@ runs:
       run: |
         for dockerImage in ${{ inputs.dockerLocalImages }}; do
           kind load docker-image ${dockerImage}
-        done  
- 
+        done

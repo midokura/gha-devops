@@ -28,3 +28,8 @@ gen-docs:
 		fi; \
 	done;
 	@echo "\n\n**Auto generated on: $$(date)**\n\n" >> gha.md;
+
+## yamllint 	Execute a yamllint
+yamllint:
+	@echo "\n> Execute yamllint";
+	@yamllint -c .yamllint.yaml .
