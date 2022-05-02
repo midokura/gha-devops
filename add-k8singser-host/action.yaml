@@ -1,6 +1,6 @@
 ---
 name: Add k8s ingress & services to host
-description: > 
+description: >
   Action to add to the GitHub Runner /etc/hosts file the main domain of the k8s ingress controller and the exposed services
 
 
@@ -9,7 +9,7 @@ description: >
   ```
 
   - name: Add kind ingress & services to hosts
-    uses: midokura/gha-devops/add-k8singser-host@main    
+    uses: midokura/gha-devops/add-k8singser-host@main
   ```
 
 runs:
@@ -17,7 +17,7 @@ runs:
   steps:
     - name: Get ingress and services and add to /etc/hosts
       shell: bash
-      run: | 
+      run: |
         kubectl get ingress -A -o=json | jq -r '.items[]| "\(.status.loadBalancer.ingress[0].ip) \(.spec.rules[0].host)"' | sudo tee -a /etc/hosts
         kubectl get services -A -o=json | jq -r '.items[]|select(.spec.type=="LoadBalancer")| "\(.status.loadBalancer.ingress[0].ip) \(.metadata.name).\(.metadata.namespace).local"' | sudo tee -a /etc/hosts
         cat /etc/hosts
