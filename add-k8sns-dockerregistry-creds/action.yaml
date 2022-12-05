@@ -23,6 +23,10 @@ inputs:
   secretName:
     description: Name for the new secret
     required: true
+  dockerHomeDir:
+    required: false
+    description: The directory where we have `.docker/config.json`
+    default: /home/runner
 
 runs:
   using: composite
@@ -35,6 +39,6 @@ runs:
           kubectl create namespace ${{ inputs.k8sNS }}
         fi
         kubectl create secret generic ${{ inputs.secretName }} -n ${{ inputs.k8sNS }} \
-          --from-file=.dockerconfigjson=/home/runner/.docker/config.json \
+          --from-file=.dockerconfigjson=${{ inputs.dockerHomeDir }}/.docker/config.json \
           --type=kubernetes.io/dockerconfigjson
         kubectl get secrets -n ${{ inputs.k8sNS }}
