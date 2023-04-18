@@ -1,0 +1,123 @@
+---
+name: OSS License | Check docker
+description: >
+  Action to check the OSS License for all the docker layers
+
+
+  Example:
+
+  ```
+
+  - name: OSS License | Check docker
+    uses: midokura/gha-devops/oss-license-check-docker@main
+    with:
+      dockerImage: "ghcr.io/midokura/evp-api:0.14.1-91d240c"
+      runScancodeToolkit: true
+  ```
+
+inputs:
+  dockerImage:
+    description: Docker image to scan
+    required: true
+  runScancodeToolkit:
+    description: Run scancode-toolkit
+    type: boolean 
+    default: false
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' 
+    
+    # - name: Login GitHub Container Registry
+    #   uses: docker/login-action@v2
+    #   with:
+    #     username: ${{ secrets.GHCR_USERNAME_RW }}
+    #     password: ${{ secrets.GHCR_PASSWORD_RW }}
+    #     registry: ghcr.io
+    # - name: Login Docker Hub
+    #   uses: docker/login-action@v2
+    #   with:
+    #     username: ${{ secrets.DOCKERHUB_USERNAME_RO }}
+    #     password: ${{ secrets.DOCKERHUB_PASSWORD_RO }}
+    #     registry: docker.io
+
+    - run: docker pull ${{ inputs.dockerImage }}
+
+    # Tern
+    - name: Setup Tern
+      shell: bash
+      env:
+        SKOPEO_VERSION: 1.12.0
+      run: |
+        sudo apt update
+        if ! command -v skopeo; then
+          wget -O skopeo https://github.com/lework/skopeo-binary/releases/download/v${SKOPEO_VERSION}/skopeo-linux-amd64
+          sudo install skopeo /usr/local/bin
+          rm -f skopeo
+          skopeo --version
+          sudo mkdir -p /etc/containers
+          # create Skopeo configuration
+          echo '{"default":[{"type":"insecureAcceptAnything"}]}' | sudo tee /etc/containers/policy.json
+        fi
+        sudo apt install -f -y attr jq
+        python3 -m venv ternenv
+        source ternenv/bin/activate
+        pip install tern scancode-toolkit
+    - name: Run Tern
+      continue-on-error: true
+      env:
+        IMAGE_NAME: ${{ inputs.dockerImage }}
+        FORMAT: spdxjson
+        OUTPUT: tern.json
+      run: |
+        source ternenv/bin/activate
+        tern report -i ${IMAGE_NAME} -f ${FORMAT} -o ${OUTPUT}
+    - name: Run Tern scancode-toolkit
+      if: ${{ inputs.runScancodeToolkit }}
+      continue-on-error: true
+      env:
+        IMAGE_NAME: ${{ inputs.dockerImage }}
+        OUTPUT: scancode.json
+      run: |
+        source ternenv/bin/activate
+        tern report -x scancode -i ${IMAGE_NAME} -o ${OUTPUT}
+
+    # Syft
+    - name: Setup Syft
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sudo sh -s -- -b /usr/local/bin
+    - name: Run Syft
+      continue-on-error: true
+      env:
+        IMAGE_NAME: ${{ inputs.dockerImage }}
+        FORMAT: spdx-json
+        OUTPUT: syft.json
+      run: syft ${IMAGE_NAME} -o ${FORMAT}=${OUTPUT}
+
+    # BOM
+    - name: Setup BOM
+      env:
+        BOM_VERSION: 0.5.1
+      run: |
+        if ! command -v bom; then
+          wget -O bom https://github.com/kubernetes-sigs/bom/releases/download/v${BOM_VERSION}/bom-amd64-linux
+          sudo install bom /usr/local/bin
+          rm -f bom
+          bom version
+        fi
+    - name: Run BOM
+      env:
+        IMAGE_NAME: ${{ inputs.dockerImage }}
+        FORMAT: json
+        OUTPUT: bom.json
+      run: bom generate --output=${OUTPUT} --format=${FORMAT} --image ${IMAGE_NAME}
+
+    # Report
+    - uses: actions/upload-artifact@v3
+      with:
+        name: report
+        path: ./**.json
+        if-no-files-found: error
