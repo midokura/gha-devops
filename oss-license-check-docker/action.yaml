@@ -1,5 +1,5 @@
 ---
-name: OSS License | Check docker
+name: OSS License | Docker
 description: >
   Action to check the OSS License for all the docker layers
 
@@ -8,7 +8,7 @@ description: >
 
   ```
 
-  - name: OSS License | Check docker
+  - name: OSS License | Docker
     uses: midokura/gha-devops/oss-license-check-docker@main
     with:
       dockerImage: "ghcr.io/midokura/evp-api:0.14.1-91d240c"
@@ -22,7 +22,6 @@ inputs:
   runScancodeToolkit:
     description: Run scancode-toolkit
     type: boolean 
-    default: false
 
 runs:
   using: composite
