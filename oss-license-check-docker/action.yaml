@@ -27,24 +27,16 @@ inputs:
 runs:
   using: composite
   steps:
+
+    # Setup
     - uses: actions/setup-python@v4
       with:
         python-version: '3.10' 
-    
-    # - name: Login GitHub Container Registry
-    #   uses: docker/login-action@v2
-    #   with:
-    #     username: ${{ secrets.GHCR_USERNAME_RW }}
-    #     password: ${{ secrets.GHCR_PASSWORD_RW }}
-    #     registry: ghcr.io
-    # - name: Login Docker Hub
-    #   uses: docker/login-action@v2
-    #   with:
-    #     username: ${{ secrets.DOCKERHUB_USERNAME_RO }}
-    #     password: ${{ secrets.DOCKERHUB_PASSWORD_RO }}
-    #     registry: docker.io
 
-    - run: docker pull ${{ inputs.dockerImage }}
+    # Docker
+    - name: Get docker image
+      shell: bash
+      run: docker pull ${{ inputs.dockerImage }}
 
     # Tern
     - name: Setup Tern
@@ -68,6 +60,7 @@ runs:
         pip install tern scancode-toolkit
     - name: Run Tern
       continue-on-error: true
+      shell: bash
       env:
         IMAGE_NAME: ${{ inputs.dockerImage }}
         FORMAT: spdxjson
@@ -78,6 +71,7 @@ runs:
     - name: Run Tern scancode-toolkit
       if: ${{ inputs.runScancodeToolkit }}
       continue-on-error: true
+      shell: bash
       env:
         IMAGE_NAME: ${{ inputs.dockerImage }}
         OUTPUT: scancode.json
@@ -87,10 +81,12 @@ runs:
 
     # Syft
     - name: Setup Syft
+      shell: bash
       run: |
         curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sudo sh -s -- -b /usr/local/bin
     - name: Run Syft
       continue-on-error: true
+      shell: bash
       env:
         IMAGE_NAME: ${{ inputs.dockerImage }}
         FORMAT: spdx-json
@@ -99,6 +95,7 @@ runs:
 
     # BOM
     - name: Setup BOM
+      shell: bash
       env:
         BOM_VERSION: 0.5.1
       run: |
@@ -109,6 +106,7 @@ runs:
           bom version
         fi
     - name: Run BOM
+      shell: bash
       env:
         IMAGE_NAME: ${{ inputs.dockerImage }}
         FORMAT: json
