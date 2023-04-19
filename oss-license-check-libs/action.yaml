@@ -11,11 +11,11 @@ description: >
   - name: OSS License Check | Libs
     uses: midokura/gha-devops/oss-license-check-libs@main
     with:
-      githubToken: ${{ ssecrets.TOKEN_PACKAGES }}
+      githubToken: <secrets.TOKEN_PACKAGES>
       repository: midokura/evp-device-agent
       branch: main
       fossologyEndpoint: https://fossology.bcn-penguin.midocloud.net/repo
-      fossologyToken: ${{ ssecrets.FOSSOLOGY_TOKEN }}
+      fossologyToken: <secrets.FOSSOLOGY_TOKEN>
       fossologyFolderId: "4"
   ```
 
