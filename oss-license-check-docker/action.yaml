@@ -19,9 +19,12 @@ inputs:
   dockerImage:
     description: Docker image to scan
     required: true
+    type: string
   runScancodeToolkit:
     description: Run scancode-toolkit
+    required: false
     type: boolean 
+    default: false
 
 runs:
   using: composite
