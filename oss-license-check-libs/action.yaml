@@ -1,6 +1,24 @@
 ---
 name: OSS License Check | Libs
 
+description: >
+  Action to check the OSS License for the source code and libs
+
+  Example:
+
+  ```
+
+  - name: OSS License Check | Libs
+    uses: midokura/gha-devops/oss-license-check-libs@main
+    with:
+      githubToken: ${{ ssecrets.TOKEN_PACKAGES }}
+      repository: midokura/evp-device-agent
+      branch: main
+      fossologyEndpoint: https://fossology.bcn-penguin.midocloud.net/repo
+      fossologyToken: ${{ ssecrets.FOSSOLOGY_TOKEN }}
+      fossologyFolderId: "4"
+  ```
+
 inputs:
   githubToken:
     description: GitHub repo access token
