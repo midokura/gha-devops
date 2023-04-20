@@ -23,7 +23,7 @@ inputs:
   runScancodeToolkit:
     description: Run scancode-toolkit
     required: false
-    type: boolean 
+    type: boolean
     default: false
 
 runs:
@@ -33,7 +33,7 @@ runs:
     # Setup
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.10' 
+        python-version: '3.10'
 
     # Docker
     - name: Get docker image
@@ -115,9 +115,11 @@ runs:
         OUTPUT: bom.json
       run: bom generate --output=${OUTPUT} --format=${FORMAT} --image ${IMAGE_NAME}
 
+    # TODO: Update
     # Report
     - uses: actions/upload-artifact@v3
       with:
         name: report
         path: ./**.json
         if-no-files-found: error
+        retention-days: 3

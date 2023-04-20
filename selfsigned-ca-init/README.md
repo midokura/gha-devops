@@ -15,21 +15,15 @@ Example:
       namespace: 'my-namespace'
 
 ```
-
-
-
 <!-- action-docs-description -->
 
 <!-- action-docs-inputs -->
 ## Inputs
 
 | parameter | description | required | default |
-| - | - | - | - |
+| --- | --- | --- | --- |
 | cert_dir | DockerHub registry username | `false` |  |
 | namespace | Namespace where certificates will be created | `true` |  |
-
-
-
 <!-- action-docs-inputs -->
 
 <!-- action-docs-outputs -->
@@ -39,7 +33,5 @@ Example:
 <!-- action-docs-runs -->
 ## Runs
 
-This action is an `composite` action.
-
-
+This action is a `composite` action.
 <!-- action-docs-runs -->

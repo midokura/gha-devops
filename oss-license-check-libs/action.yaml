@@ -90,7 +90,7 @@ runs:
       env:
         UPLOAD_ID: ${{ steps.upload.outputs.id }}
         FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
-        TOKEN:  ${{ inputs.fossologyToken }}
+        TOKEN: ${{ inputs.fossologyToken }}
       run: |
         until curl -fsSL -o upload.json ${FOSSOLOGY_ENDPOINT}/api/v1/uploads/${UPLOAD_ID} -H "Authorization: Bearer ${TOKEN}"; do \
           sleep 6
@@ -172,14 +172,16 @@ runs:
         echo "REPORT_FOLDER=${REPORT_FOLDER}" >> ${GITHUB_ENV}
         cp -v {upload,licenses}.json repository.txt ${REPORT_FOLDER}
 
-    # Report    
+    # TODO: Update
+    # Report
     - name: Upload report
       uses: actions/upload-artifact@v3
       with:
         name: report
         path: ${{ env.REPORT_FOLDER }}/
         if-no-files-found: error
-        
+        retention-days: 3
+
     - name: Delete upload
       if: ${{ always() && steps.upload.outputs.id }}
       shell: bash

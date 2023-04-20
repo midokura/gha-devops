@@ -13,23 +13,18 @@ Example:
   uses: midokura/gha-devops/add-k8sns-dockerregistry-creds@main
   with:
     k8sNS: tb
-    secretName: dockerregistry-creds    
+    secretName: dockerregistry-creds
 ```
-
-
-
 <!-- action-docs-description -->
 
 <!-- action-docs-inputs -->
 ## Inputs
 
 | parameter | description | required | default |
-| - | - | - | - |
+| --- | --- | --- | --- |
 | k8sNS | Kubernetes Namespace | `false` | default |
 | secretName | Name for the new secret | `true` |  |
-
-
-
+| dockerHomeDir | The directory where we have `.docker/config.json` | `false` | /home/runner |
 <!-- action-docs-inputs -->
 
 <!-- action-docs-outputs -->
@@ -39,7 +34,5 @@ Example:
 <!-- action-docs-runs -->
 ## Runs
 
-This action is an `composite` action.
-
-
+This action is a `composite` action.
 <!-- action-docs-runs -->
