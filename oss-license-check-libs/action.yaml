@@ -16,6 +16,7 @@ description: |
       fossologyEndpoint: https://fossology.domain.com/repo
       fossologyToken: <secrets.FOSSOLOGY_TOKEN>
       fossologyFolderId: "4"
+      tag: "1.0.2"
   ```
 
 inputs:
@@ -42,6 +43,10 @@ inputs:
   fossologyFolderId:
     description: Fossology folder ID
     required: true
+    type: string
+  tag:
+    description: Tag name (default if not provided)
+    required: false
     type: string
 
 runs:
@@ -170,16 +175,17 @@ runs:
         mkdir -p ${REPORT_FOLDER}
         echo "REPORT_FOLDER=${REPORT_FOLDER}" >> ${GITHUB_ENV}
         cp -v {upload,licenses}.json repository.txt ${REPORT_FOLDER}
+        tar -czvf license-report-libs.tar.gz -C ${REPORT_FOLDER} .
 
-    # TODO: Update
-    # Report
-    - name: Upload report
-      uses: actions/upload-artifact@v3
+    - name: Upload report files
+      if: inputs.tag != ''
+      uses: svenstaro/upload-release-action@v2
       with:
-        name: report
-        path: ${{ env.REPORT_FOLDER }}/
-        if-no-files-found: error
-        retention-days: 3
+        repo_name: ${{ inputs.repository }}
+        repo_token: ${{ inputs.githubToken }}
+        file: license-report-libs.tar.gz
+        asset_name: license-report-libs.tar.gz
+        tag: ${{ inputs.tag }}
 
     - name: Delete upload
       if: ${{ always() && steps.upload.outputs.id }}
