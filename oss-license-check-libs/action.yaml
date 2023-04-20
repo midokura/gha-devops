@@ -91,7 +91,6 @@ runs:
         UPLOAD_ID: ${{ steps.upload.outputs.id }}
         FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
         TOKEN:  ${{ inputs.fossologyToken }}
-      #timeout-minutes: 3
       run: |
         until curl -fsSL -o upload.json ${FOSSOLOGY_ENDPOINT}/api/v1/uploads/${UPLOAD_ID} -H "Authorization: Bearer ${TOKEN}"; do \
           sleep 6
@@ -139,7 +138,6 @@ runs:
         JOB_ID: ${{ steps.analysis.outputs.id }}
         FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
         TOKEN: ${{ inputs.fossologyToken }}
-      #timeout-minutes: 5
       run: |
         STATUS=Processing
         while ( [ "$STATUS" = "Processing" ] || [ "$STATUS" = "Queued" ] ); do
@@ -172,10 +170,7 @@ runs:
       run: |
         mkdir -p ${REPORT_FOLDER}
         echo "REPORT_FOLDER=${REPORT_FOLDER}" >> ${GITHUB_ENV}
-        cp -v \
-          {upload,licenses}.json \
-          repository.txt \
-        ${REPORT_FOLDER}
+        cp -v {upload,licenses}.json repository.txt ${REPORT_FOLDER}
     - name: Upload report
       uses: actions/upload-artifact@v3
       with:
