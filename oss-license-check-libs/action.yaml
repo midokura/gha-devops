@@ -171,11 +171,15 @@ runs:
         mkdir -p ${REPORT_FOLDER}
         echo "REPORT_FOLDER=${REPORT_FOLDER}" >> ${GITHUB_ENV}
         cp -v {upload,licenses}.json repository.txt ${REPORT_FOLDER}
+
+    # Report    
     - name: Upload report
       uses: actions/upload-artifact@v3
       with:
         name: report
         path: ${{ env.REPORT_FOLDER }}/
+        if-no-files-found: error
+        
     - name: Delete upload
       if: ${{ always() && steps.upload.outputs.id }}
       shell: bash
