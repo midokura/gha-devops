@@ -12,6 +12,9 @@ description: |
     with:
       dockerImage: "ghcr.io/midokura/docker-image:dev"
       runScancodeToolkit: true
+      githubToken: <secrets.TOKEN_PACKAGES>
+      repository: midokura/repository
+      tag: "1.0.2"
   ```
 
 inputs:
@@ -24,6 +27,18 @@ inputs:
     required: false
     type: boolean
     default: false
+  githubToken:
+    description: GitHub repo access token
+    required: false
+    type: string
+  repository:
+    description: GitHub repository in ORG/NAME format (midokura/...)
+    required: false
+    type: string
+  tag:
+    description: Tag name (default if not provided)
+    required: false
+    type: string
 
 runs:
   using: composite
@@ -106,6 +121,7 @@ runs:
           rm -f bom
           bom version
         fi
+
     - name: Run BOM
       shell: bash
       env:
@@ -114,11 +130,15 @@ runs:
         OUTPUT: bom.json
       run: bom generate --output=${OUTPUT} --format=${FORMAT} --image ${IMAGE_NAME}
 
-    # TODO: Update
-    # Report
-    - uses: actions/upload-artifact@v3
+    - name: Create tar.gz archive
+      run: tar czvf license-report-docker.tar.gz *.json
+
+    - name: Upload report files
+      if: inputs.tag != '' && inputs.githubToken != '' && inputs.repository != ''
+      uses: svenstaro/upload-release-action@v2
       with:
-        name: report
-        path: ./**.json
-        if-no-files-found: error
-        retention-days: 3
+        repo_name: ${{ inputs.repository }}
+        repo_token: ${{ inputs.githubToken }}
+        file: license-report-docker.tar.gz
+        asset_name: license-report-docker.tar.gz
+        tag: ${{ inputs.tag }}
