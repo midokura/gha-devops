@@ -14,20 +14,14 @@ Example:
   with:
     testString: Hello!
 ```
-
-
-
 <!-- action-docs-description -->
 
 <!-- action-docs-inputs -->
 ## Inputs
 
 | parameter | description | required | default |
-| - | - | - | - |
+| --- | --- | --- | --- |
 | testString | String for testing | `true` |  |
-
-
-
 <!-- action-docs-inputs -->
 
 <!-- action-docs-outputs -->
@@ -37,7 +31,5 @@ Example:
 <!-- action-docs-runs -->
 ## Runs
 
-This action is an `composite` action.
-
-
+This action is a `composite` action.
 <!-- action-docs-runs -->

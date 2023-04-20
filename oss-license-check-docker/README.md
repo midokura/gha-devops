@@ -1,19 +1,19 @@
-# GitHub Actions: midokura/gha-devops/selfsigned-ca-init
+# GitHub Actions: midokura/gha-devops/oss-license-check-docker
 
 [Index](../gha.md)
 
 <!-- action-docs-description -->
 ## Description
 
-Action for setting up a self signed CA authority. Requires Kubernetes running
+Action to check the OSS License for all the docker layers
 
 Example:
 ```
-- name: Self signed CA init
-  uses: midokura/gha-devops/selfsigned-ca-init@main
-    with:
-      namespace: 'my-namespace'
-
+- name: OSS License Check | Docker
+  uses: midokura/gha-devops/oss-license-check-docker@main
+  with:
+    dockerImage: "ghcr.io/midokura/docker-image:latest"
+    runScancodeToolkit: true
 ```
 <!-- action-docs-description -->
 
@@ -22,8 +22,8 @@ Example:
 
 | parameter | description | required | default |
 | --- | --- | --- | --- |
-| cert_dir | DockerHub registry username | `false` |  |
-| namespace | Namespace where certificates will be created | `true` |  |
+| dockerImage | Docker image to scan | `true` |  |
+| runScancodeToolkit | Run scancode-toolkit | `false` | false |
 <!-- action-docs-inputs -->
 
 <!-- action-docs-outputs -->

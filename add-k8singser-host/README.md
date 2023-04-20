@@ -10,11 +10,8 @@ Action to add to the GitHub Runner /etc/hosts file the main domain of the k8s in
 Example:
 ```
 - name: Add kind ingress & services to hosts
-  uses: midokura/gha-devops/add-k8singser-host@main    
+  uses: midokura/gha-devops/add-k8singser-host@main
 ```
-
-
-
 <!-- action-docs-description -->
 
 <!-- action-docs-inputs -->
@@ -28,7 +25,5 @@ Example:
 <!-- action-docs-runs -->
 ## Runs
 
-This action is an `composite` action.
-
-
+This action is a `composite` action.
 <!-- action-docs-runs -->

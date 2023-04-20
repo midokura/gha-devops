@@ -16,22 +16,16 @@ Example:
     dockerHubPassword: <SECRET_DOCKERHUB_PASSWORD>
     dockerLocalImages: "test/docker-image:local bitnami/postgresql:latest"
 ```
-
-
-
 <!-- action-docs-description -->
 
 <!-- action-docs-inputs -->
 ## Inputs
 
 | parameter | description | required | default |
-| - | - | - | - |
+| --- | --- | --- | --- |
 | dockerHubUsername | DockerHub registry username | `true` |  |
 | dockerHubPassword | DockerHub registry password | `true` |  |
 | dockerLocalImages | Docker local images to push in kind | `false` |  |
-
-
-
 <!-- action-docs-inputs -->
 
 <!-- action-docs-outputs -->
@@ -41,7 +35,5 @@ Example:
 <!-- action-docs-runs -->
 ## Runs
 
-This action is an `composite` action.
-
-
+This action is a `composite` action.
 <!-- action-docs-runs -->

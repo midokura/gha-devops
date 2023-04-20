@@ -1,0 +1,193 @@
+---
+name: OSS License Check | Libs
+
+description: |
+  Action to check the OSS License for the source code and libs
+
+  Example:
+
+  ```
+  - name: OSS License Check | Libs
+    uses: midokura/gha-devops/oss-license-check-libs@main
+    with:
+      githubToken: <secrets.TOKEN_PACKAGES>
+      repository: midokura/repository
+      branch: main
+      fossologyEndpoint: https://fossology.domain.com/repo
+      fossologyToken: <secrets.FOSSOLOGY_TOKEN>
+      fossologyFolderId: "4"
+  ```
+
+inputs:
+  githubToken:
+    description: GitHub repo access token
+    required: true
+    type: string
+  repository:
+    description: GitHub repository in ORG/NAME format (midokura/...)
+    required: true
+    type: string
+  branch:
+    description: Branch name (default if not provided)
+    required: false
+    type: string
+  fossologyEndpoint:
+    description: Fossology endpoint
+    required: true
+    type: string
+  fossologyToken:
+    description: Fossology access token
+    required: true
+    type: string
+  fossologyFolderId:
+    description: Fossology folder ID
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.branch || '' }}
+        token: ${{ inputs.githubToken }}
+        submodules: true
+        path: repo
+    - name: Archive repo
+      working-directory: repo
+      shell: bash
+      run: |
+        git archive --format=tar.gz -o ../repo.tar.gz HEAD
+        # used for report info
+        git remote -v >> ../repository.txt
+        git show --oneline -s >> ../repository.txt
+    - name: Upload to FOSSology
+      id: upload
+      shell: bash
+      env:
+        RUN_ID: ${{ github.run_id }}
+        FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
+        TOKEN: ${{ inputs.fossologyToken }}
+        FOSSOLOGY_FOLDER: ${{ inputs.fossologyFolderId }}
+      run: |
+        curl -fsSL -XPOST ${FOSSOLOGY_ENDPOINT}/api/v1/uploads \
+          -H "folderId: ${FOSSOLOGY_FOLDER}" \
+          -H "uploadDescription: GitHub_${RUN_ID}" \
+          -H "groupName: fossy" \
+          -H "public: public" \
+          -H "Authorization: Bearer ${TOKEN}" \
+          -H "Content-Type: multipart/form-data" \
+          -F 'fileInput=@"repo.tar.gz";type=application/x-gtar' \
+          -o upload.json || exit 1
+        # NOTE: public means visible for "all users"
+        echo "id="$(jq -r .message upload.json) >> ${GITHUB_OUTPUT}
+        echo "Upload ID: $(jq -r .message upload.json)" >> ${GITHUB_STEP_SUMMARY}
+        sleep 1
+    - name: Wait for processing
+      shell: bash
+      env:
+        UPLOAD_ID: ${{ steps.upload.outputs.id }}
+        FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
+        TOKEN: ${{ inputs.fossologyToken }}
+      run: |
+        until curl -fsSL -o upload.json ${FOSSOLOGY_ENDPOINT}/api/v1/uploads/${UPLOAD_ID} -H "Authorization: Bearer ${TOKEN}"; do \
+          sleep 6
+          rm -f upload.json 2> /dev/null
+        done
+        cat upload.json
+    - name: Run Analysis job
+      id: analysis
+      shell: bash
+      env:
+        UPLOAD_ID: ${{ steps.upload.outputs.id }}
+        FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
+        TOKEN: ${{ inputs.fossologyToken }}
+        FOSSOLOGY_FOLDER: ${{ inputs.fossologyFolderId }}
+      run: |
+        cat << EOF > config.json
+        {
+          "analysis": {
+            "monk": true,
+            "nomos": true,
+            "package": true
+          },
+          "decider": {
+            "nomos_monk": true,
+            "bulk_reused": true,
+            "new_scanner": true
+          }
+        }
+        EOF
+        curl -sSL -XPOST ${FOSSOLOGY_ENDPOINT}/api/v1/jobs \
+          -H "uploadId: ${UPLOAD_ID}" \
+          -H "folderId: ${FOSSOLOGY_FOLDER}" \
+          -H "Authorization: Bearer ${TOKEN}" \
+          -H "Content-Type: application/json" \
+          -d @config.json \
+          -o output.json || exit 1
+        echo "id="$(jq -r .message output.json) >> ${GITHUB_OUTPUT}
+        echo "Job ID: $(jq -r .message output.json)" >> ${GITHUB_STEP_SUMMARY}
+        rm -f config.json output.json
+        sleep 1
+    - name: Wait for processing
+      shell: bash
+      env:
+        UPLOAD_ID: ${{ steps.upload.outputs.id }}
+        JOB_ID: ${{ steps.analysis.outputs.id }}
+        FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
+        TOKEN: ${{ inputs.fossologyToken }}
+      run: |
+        STATUS=Processing
+        while ( [ "$STATUS" = "Processing" ] || [ "$STATUS" = "Queued" ] ); do
+          sleep 6
+          curl -fsSL ${FOSSOLOGY_ENDPOINT}/api/v1/jobs/${JOB_ID}?upload=${UPLOAD_ID} \
+            -H "Authorization: Bearer ${TOKEN}" \
+            -o output.json || exit 1
+          STATUS=$(jq -r .status output.json)
+          echo "$(date) ${STATUS}"
+          rm -f output.json
+        done
+        [ "$STATUS" = "Completed" ] && exit 0 || exit 1
+    - name: Get licenses
+      shell: bash
+      env:
+        UPLOAD_ID: ${{ steps.upload.outputs.id }}
+        TOKEN: ${{ inputs.fossologyToken }}
+        FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
+        AGENT: nomos,monk
+      run: |
+        curl -fsSL ${FOSSOLOGY_ENDPOINT}/api/v1/uploads/${UPLOAD_ID}/licenses?agent=${AGENT} \
+          -H "Authorization: Bearer ${TOKEN}" \
+          -o licenses.json || exit 1
+        jq -r ".[] | select (.findings.scanner != null) | .findings.scanner | .[]" licenses.json \
+          | sort | uniq -c | sort -n -r | tee -a ${GITHUB_STEP_SUMMARY}
+    - name: Prepare report files
+      shell: bash
+      env:
+        REPORT_FOLDER: report_upload
+      run: |
+        mkdir -p ${REPORT_FOLDER}
+        echo "REPORT_FOLDER=${REPORT_FOLDER}" >> ${GITHUB_ENV}
+        cp -v {upload,licenses}.json repository.txt ${REPORT_FOLDER}
+
+    # TODO: Update
+    # Report
+    - name: Upload report
+      uses: actions/upload-artifact@v3
+      with:
+        name: report
+        path: ${{ env.REPORT_FOLDER }}/
+        if-no-files-found: error
+        retention-days: 3
+
+    - name: Delete upload
+      if: ${{ always() && steps.upload.outputs.id }}
+      shell: bash
+      env:
+        UPLOAD_ID: ${{ steps.upload.outputs.id }}
+        FOSSOLOGY_ENDPOINT: ${{ inputs.fossologyEndpoint }}
+        TOKEN: ${{ inputs.fossologyToken }}
+      run: |
+        curl -sSL -XDELETE ${FOSSOLOGY_ENDPOINT}/api/v1/uploads/${UPLOAD_ID} \
+          -H "Authorization: Bearer ${TOKEN}"
