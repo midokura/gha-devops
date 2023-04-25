@@ -176,6 +176,8 @@ runs:
         echo "REPORT_FOLDER=${REPORT_FOLDER}" >> ${GITHUB_ENV}
         cp -v {upload,licenses}.json repository.txt ${REPORT_FOLDER}
         tar -czvf license-report-libs.tar.gz -C ${REPORT_FOLDER} .
+        # clean files
+        rm -f {upload,licenses}.json
 
     - name: Upload report files
       if: inputs.tag != ''
