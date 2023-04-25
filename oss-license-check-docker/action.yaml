@@ -11,7 +11,7 @@ description: |
     uses: midokura/gha-devops/oss-license-check-docker@main
     with:
       dockerImage: "ghcr.io/midokura/docker-image:dev"
-      runScancodeToolkit: true
+      runScancodeToolkit: "true"
       githubToken: <secrets.TOKEN_PACKAGES>
       repository: midokura/repository
       tag: "1.0.2"
@@ -21,24 +21,19 @@ inputs:
   dockerImage:
     description: Docker image to scan
     required: true
-    type: string
   runScancodeToolkit:
     description: Run scancode-toolkit
     required: false
-    type: boolean
-    default: false
+    default: "false"
   githubToken:
     description: GitHub repo access token
     required: false
-    type: string
   repository:
     description: GitHub repository in ORG/NAME format (midokura/...)
     required: false
-    type: string
   tag:
     description: Tag name (default if not provided)
     required: false
-    type: string
 
 runs:
   using: composite
@@ -85,7 +80,7 @@ runs:
         source ternenv/bin/activate
         tern report -i ${IMAGE_NAME} -f ${FORMAT} -o ${OUTPUT}
     - name: Run Tern scancode-toolkit
-      if: ${{ inputs.runScancodeToolkit }}
+      if: ${{ inputs.runScancodeToolkit == 'true' }}
       continue-on-error: true
       shell: bash
       env:
