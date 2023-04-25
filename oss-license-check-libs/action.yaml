@@ -84,7 +84,7 @@ runs:
           -H "Authorization: Bearer ${TOKEN}" \
           -H "Content-Type: multipart/form-data" \
           -F 'fileInput=@"repo.tar.gz";type=application/x-gtar' \
-          -o upload.json || exit 1
+          -o upload.json || (cat upload.json; exit 1)
         # NOTE: public means visible for "all users"
         echo "id="$(jq -r .message upload.json) >> ${GITHUB_OUTPUT}
         echo "Upload ID: $(jq -r .message upload.json)" >> ${GITHUB_STEP_SUMMARY}
