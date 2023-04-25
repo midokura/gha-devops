@@ -23,31 +23,24 @@ inputs:
   githubToken:
     description: GitHub repo access token
     required: true
-    type: string
   repository:
     description: GitHub repository in ORG/NAME format (midokura/...)
     required: true
-    type: string
   branch:
     description: Branch name (default if not provided)
     required: false
-    type: string
   fossologyEndpoint:
     description: Fossology endpoint
     required: true
-    type: string
   fossologyToken:
     description: Fossology access token
     required: true
-    type: string
   fossologyFolderId:
     description: Fossology folder ID
     required: true
-    type: string
   tag:
     description: Tag name (default if not provided)
     required: false
-    type: string
 
 runs:
   using: composite
