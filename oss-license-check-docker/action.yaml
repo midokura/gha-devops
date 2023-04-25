@@ -142,4 +142,5 @@ runs:
         repo_token: ${{ inputs.githubToken }}
         file: license-report-docker.tar.gz
         asset_name: license-report-docker.tar.gz
+        overwrite: true
         tag: ${{ inputs.tag }}
