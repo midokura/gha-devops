@@ -131,6 +131,7 @@ runs:
       run: bom generate --output=${OUTPUT} --format=${FORMAT} --image ${IMAGE_NAME}
 
     - name: Create tar.gz archive
+      shell: bash
       run: tar czvf license-report-docker.tar.gz *.json
 
     - name: Upload report files
