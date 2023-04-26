@@ -34,6 +34,7 @@ runs:
   - name: Download sbom-tool
     env:
       SBOM_TOOL_VERSION: 1.0.2
+    shell: bash
     run: |
       if ! command -v sbom-tool >/dev/null; then
         curl -fsSL -o sbom-tool "https://github.com/microsoft/sbom-tool/releases/download/v${SBOM_TOOL_VERSION}/sbom-tool-linux-x64"
@@ -50,6 +51,7 @@ runs:
     env:
       LOCATION: ${{ inputs.working-directory }}
       REPORT_OUTPUT: sbom.csv
+    shell: bash
     run: |
       cp -v oss-license-check/scripts/oss_compliance/sbom-tool/generate_spdx.py ${HOME}/.local/bin/
       [ -n "${LOCATION}" ] && cd ${LOCATION}
