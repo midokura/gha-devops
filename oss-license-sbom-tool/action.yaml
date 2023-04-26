@@ -53,10 +53,13 @@ runs:
       REPORT_OUTPUT: sbom.csv
     shell: bash
     run: |
-      cp -v oss-license-check/scripts/oss_compliance/sbom-tool/generate_spdx.py ${HOME}/.local/bin/
-      [ -n "${LOCATION}" ] && cd ${LOCATION}
-      pip3 install --no-cache pyyaml requests
-      python3 generate_spdx.py
+      cd oss-license-check/scripts/oss_compliance/sbom-tool
+      cp -v generate_spdx.py ${HOME}/.local/bin/
+      pip3 install --no-cache -r requirements.txt
+      cd -
+      rm -rf oss-license-check
+      [ -n "${LOCATION}" ] && cd ${LOCATION} && echo "> $PWD"
+      python3 ${HOME}/.local/bin/generate_spdx.py
 
       echo '"NAME","VERSION","LICENSE","DOWNLOAD LOCATION","PROJECT HOMEPAGE","PURPOSE"' > ${REPORT_OUTPUT}
       jq -r '.packages | .[] | [.name,.versionInfo,.licenseConcluded,.downloadLocation,.homepage,.primaryPackagePurpose] | @csv' *.spdx.json >> ${REPORT_OUTPUT}
