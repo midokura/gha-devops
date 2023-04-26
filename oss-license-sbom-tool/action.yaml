@@ -1,0 +1,71 @@
+---
+name: OSS License sbom-tool Generator
+description: |
+  Generates SBOM SPDX documents from manual SBOM list
+
+  Example:
+
+  ```
+  - name: OSS License sbom-tool Generator
+    uses: midokura/gha-devops/oss-license-sbom-tool@main
+    with:
+      githubToken: <TOKEN>
+      working-directory: optional
+      tag: "1.2.3"
+  ```
+
+inputs:
+  githubToken:
+    description: GitHub token
+    required: false
+  working-directory:
+    description: Change working directory
+    required: false
+  repository:
+    description: GitHub repository in ORG/NAME format (midokura/...)
+    required: false
+  tag:
+    description: Tag name (default if not provided)
+    required: false
+
+runs:
+  using: composite
+  steps:
+  - name: Download sbom-tool
+    env:
+      SBOM_TOOL_VERSION: 1.0.2
+    run: |
+      if ! command -v sbom-tool >/dev/null; then
+        curl -fsSL -o sbom-tool "https://github.com/microsoft/sbom-tool/releases/download/v${SBOM_TOOL_VERSION}/sbom-tool-linux-x64"
+        install sbom-tool ${HOME}/.local/bin/sbom-tool
+        sudo apt update && sudo apt install -y --no-install-recommends icu-devtools
+      fi
+  - name: Download oss-license-check repo
+    uses: actions/checkout@v3
+    with:
+      repository: midokura/oss-license-check
+      path: oss-license-check
+      token: ${{ inputs.githubToken }}
+  - name: Generate SPDX and CSV reports
+    env:
+      LOCATION: ${{ inputs.working-directory }}
+      REPORT_OUTPUT: sbom.csv
+    run: |
+      cp -v oss-license-check/scripts/oss_compliance/sbom-tool/generate_spdx.py ${HOME}/.local/bin/
+      [ -n "${LOCATION}" ] && cd ${LOCATION}
+      pip3 install --no-cache pyyaml requests
+      python3 generate_spdx.py
+
+      echo '"NAME","VERSION","LICENSE","DOWNLOAD LOCATION","PROJECT HOMEPAGE","PURPOSE"' > ${REPORT_OUTPUT}
+      jq -r '.packages | .[] | [.name,.versionInfo,.licenseConcluded,.downloadLocation,.homepage,.primaryPackagePurpose] | @csv' *.spdx.json >> ${REPORT_OUTPUT}
+
+  - name: Upload report files
+    if: inputs.tag != '' && inputs.githubToken != '' && inputs.repository != ''
+    uses: svenstaro/upload-release-action@v2
+    with:
+      repo_name: ${{ inputs.repository }}
+      repo_token: ${{ inputs.githubToken }}
+      tag: ${{ inputs.tag }}
+      file: ${{ inputs.working-directory }}/sbom.csv
+      asset_name: sbom.csv
+      overwrite: true
