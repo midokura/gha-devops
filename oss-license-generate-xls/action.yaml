@@ -58,4 +58,4 @@ runs:
 
         ssconvert -T Gnumeric_Excel:xlsx2 --merge-to=${OUTPUT} ${TMPCSV}
 
-        rm -f ${ŤMPJSON} ${TMPCSV}
+        rm -f ${TMPJSON} ${TMPCSV}
