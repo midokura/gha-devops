@@ -1,0 +1,61 @@
+---
+name: OSS License Generate Spreadsheet
+description: |
+  Convert an SPDX SBOM file to XLS in Sony format.
+
+  Example:
+
+  ```
+  - name: OSS License Generate Spreadsheet
+    uses: midokura/gha-devops/oss-license-generate-xls@main
+    with:
+      spdx: spdx.json
+      output: application.xls
+  ```
+
+inputs:
+  spdx:
+    description: Provide SPDX JSON file
+    required: true
+  output:
+    description: Name of the file
+    required: false
+    default: "sbom.xls"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup dependency
+      shell: bash
+      run: |
+        if ! command -v ssconvert >/dev/null; then
+          sudo apt update
+          sudo apt install -y --no-install-recommends gnumeric
+        fi
+        if ! command -v jq >/dev/null; then
+          sudo apt update
+          sudo apt install -y --no-install-recommends jq
+        fi
+
+    - name: Build spreadsheet
+      shell: bash
+      env:
+        REPORT: ${{ inputs.spdx }}
+        OUTPUT: ${{ inputs.output }}
+        CUSTOM: custom.json
+      run: |
+
+        export TMPJSON=`mktemp --suffix=.json`
+        export TMPCSV=`mktemp --suffix=.csv`
+        touch ${CUSTOM}
+
+        # Add headers
+        echo '"OSS COMPONENT NAME","VERSION","PACKAGE LICENSE","EXTRA DATA"' > "${TMPCSV}"
+
+        # Create csv for each xls tab. Insert v in version to avoid being undestood as a date in XLS
+        jq '.packages | .[] | {(.name): {version: ("v" + .versionInfo), license: .licenseConcluded}}' "${REPORT}" | jq -s .[] | jq -s  add > "${TMPJSON}"
+        jq -rs '.[0] * .[1] | to_entries [] | [.key,.value.version,.value.license,.value.extraData] |@csv' "${TMPJSON}" "${CUSTOM}" >> "${TMPCSV}"
+
+        ssconvert -T Gnumeric_Excel:xlsx2 --merge-to=${OUTPUT} ${TMPCSV}
+
+        rm -f ${TMPJSON} ${TMPCSV}
