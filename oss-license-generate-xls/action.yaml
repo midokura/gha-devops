@@ -10,6 +10,7 @@ description: |
     uses: midokura/gha-devops/oss-license-generate-xls@main
     with:
       spdx: spdx.json
+      custom: oss-xls-custom.json
       output: application.xls
   ```
 
@@ -17,6 +18,10 @@ inputs:
   spdx:
     description: Provide SPDX JSON file
     required: true
+  custom:
+    description: Name of the custom file for the report
+    required: false
+    default: "custom.json"
   output:
     description: Name of the file
     required: false
@@ -36,18 +41,17 @@ runs:
           sudo apt update
           sudo apt install -y --no-install-recommends jq
         fi
-
     - name: Build spreadsheet
       shell: bash
       env:
         REPORT: ${{ inputs.spdx }}
         OUTPUT: ${{ inputs.output }}
-        CUSTOM: custom.json
+        CUSTOM: ${{ inputs.custom }}
       run: |
-
         export TMPJSON=`mktemp --suffix=.json`
         export TMPCSV=`mktemp --suffix=.csv`
-        touch ${CUSTOM}
+
+        test -f ${CUSTOM} || echo "{}" > ${CUSTOM}
 
         # Add headers
         echo '"OSS COMPONENT NAME","VERSION","PACKAGE LICENSE","EXTRA DATA"' > "${TMPCSV}"
@@ -56,6 +60,6 @@ runs:
         jq '.packages | .[] | {(.name): {version: ("v" + .versionInfo), license: .licenseConcluded}}' "${REPORT}" | jq -s .[] | jq -s  add > "${TMPJSON}"
         jq -rs '.[0] * .[1] | to_entries [] | [.key,.value.version,.value.license,.value.extraData] |@csv' "${TMPJSON}" "${CUSTOM}" >> "${TMPCSV}"
 
-        ssconvert -T Gnumeric_Excel:xlsx2 --merge-to=${OUTPUT} ${TMPCSV}
+        ssconvert -T Gnumeric_Excel:xlsx2 ${TMPCSV} ${OUTPUT}
 
         rm -f ${TMPJSON} ${TMPCSV}
