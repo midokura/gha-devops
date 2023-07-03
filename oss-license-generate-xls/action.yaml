@@ -46,7 +46,7 @@ runs:
       env:
         REPORT: ${{ inputs.spdx }}
         OUTPUT: ${{ inputs.output }}
-        CUSTOM: ${{ input.custom }}
+        CUSTOM: ${{ inputs.custom }}
       run: |
         export TMPJSON=`mktemp --suffix=.json`
         export TMPCSV=`mktemp --suffix=.csv`
