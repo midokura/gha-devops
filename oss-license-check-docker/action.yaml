@@ -12,6 +12,7 @@ description: |
     with:
       dockerImage: "ghcr.io/midokura/docker-image:dev"
       runScancodeToolkit: "true"
+      runBom: "true"
       githubToken: <secrets.TOKEN_PACKAGES>
       repository: midokura/repository
       tag: "1.0.2"
@@ -23,6 +24,10 @@ inputs:
     required: true
   runScancodeToolkit:
     description: Run scancode-toolkit
+    required: false
+    default: "false"
+  runBom:
+    description: Run bom
     required: false
     default: "false"
   githubToken:
@@ -68,7 +73,7 @@ runs:
         sudo apt install -f -y attr jq
         python3 -m venv ternenv
         source ternenv/bin/activate
-        pip install tern scancode-toolkit
+        pip install tern==2.12.1 scancode-toolkit==32.0.8
     - name: Run Tern
       continue-on-error: true
       shell: bash
@@ -106,9 +111,10 @@ runs:
 
     # BOM
     - name: Setup BOM
+      if: ${{ inputs.runBom == 'true' }}
       shell: bash
       env:
-        BOM_VERSION: 0.5.1
+        BOM_VERSION: v0.6.0
       run: |
         if ! command -v bom; then
           wget -O bom https://github.com/kubernetes-sigs/bom/releases/download/v${BOM_VERSION}/bom-amd64-linux
@@ -118,6 +124,7 @@ runs:
         fi
 
     - name: Run BOM
+      if: ${{ inputs.runBom == 'true' }}
       shell: bash
       env:
         IMAGE_NAME: ${{ inputs.dockerImage }}
