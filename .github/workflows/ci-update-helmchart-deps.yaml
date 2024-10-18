@@ -1,0 +1,20 @@
+name: CI - Force renovate to inspect and upgrade relevant dependencies
+
+on:
+  push:
+    branches:
+      - main  
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Action lint
+      run: |
+        go install github.com/rhysd/actionlint/cmd/actionlint@latest
+        actionlint .github/workflows/update-helmchart-dependencies.yaml
