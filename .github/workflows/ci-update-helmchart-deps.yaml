@@ -25,9 +25,9 @@ jobs:
         fetch-depth: 0
     - name: Action lint
       uses: raven-actions/actionlint@v2
-      with: 
+      with:
         files: '.github/workflows/update-helmchart-dependencies.yaml'
     - name: Validate renovate config
       uses: suzuki-shunsuke/github-action-renovate-config-validator@v1.0.1
-      with: 
+      with:
         config_file_path: .github/chart-renovate.json5
