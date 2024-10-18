@@ -1,5 +1,9 @@
 # gha-devops: Midokura DevOps GitHub Actions
 
+# DISCLAIMER
+
+:warning: This repo was archived in favour of [midokura/github-actions](https://github.com/midokura/github-actions).
+
 Shared Midokura DevOps GitHub Actions.
 
 ## Documentation
