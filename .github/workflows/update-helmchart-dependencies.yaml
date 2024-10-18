@@ -26,7 +26,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: midokura/gha-devops/.github/chart-renovate.json5@update-chart-deps-workflow
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          repository: midokura/gha-devops
+          ref: update-chart-deps-workflow
+          path: reusable
+        
       - name: Run Renovate
         uses: renovatebot/github-action@v40.2.10
         env:
@@ -43,5 +49,5 @@ jobs:
           # Set to debug for more traces
           LOG_LEVEL: "${{ runner.debug == '1' && 'debug' || 'info' }}"
         with:
-          configurationFile: midokura/gha-devops/.github/chart-renovate.json5
+          configurationFile: reusable/.github/chart-renovate.json5
           token: ${{ secrets.renovate-bot-pat }}
