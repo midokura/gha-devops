@@ -49,7 +49,7 @@ jobs:
           RENOVATE_ONBOARDING: "false"
           RENOVATE_REQUIRE_CONFIG: "ignored"
           RENOVATE_PLATFORM_COMMIT: "true"
-          LOG_LEVEL: "debug" # Too little info without it
+          LOG_LEVEL: "debug"  # Too little info without it
         with:
           configurationFile: reusable/.github/chart-renovate.json5
           token: ${{ secrets.renovate-bot-pat }}

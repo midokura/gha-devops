@@ -3,13 +3,13 @@ name: CI - Force renovate to inspect and upgrade relevant dependencies
 on:
   push:
     branches:
-      - main  
+      - main
     paths:
       - .github/workflows/update-helmchart-dependencies.yaml
       - .github/workflows/ci-update-helmchart-deps.yaml
       - .github/chart-renovate.json5
   pull_request:
-      paths:
+    paths:
       - .github/workflows/update-helmchart-dependencies.yaml
       - .github/workflows/ci-update-helmchart-deps.yaml
       - .github/chart-renovate.json5
@@ -23,6 +23,6 @@ jobs:
       with:
         fetch-depth: 0
     - name: Action lint
-      run: |
-        go install github.com/rhysd/actionlint/cmd/actionlint@latest
-        actionlint .github/workflows/update-helmchart-dependencies.yaml
+      uses: raven-actions/actionlint@v2
+      with: 
+        files: '.github/workflows/update-helmchart-dependencies.yaml'
