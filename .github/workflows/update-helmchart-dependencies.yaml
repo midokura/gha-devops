@@ -8,11 +8,10 @@ on:
       registry:
         required: true
         type: string
-      registry-user:
-        required: true
-        type: string
     secrets:
       renovate-bot-pat:
+        required: true
+      registry-user:
         required: true
       registry-password:
         required: true
