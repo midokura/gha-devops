@@ -1,0 +1,21 @@
+{   
+    "branchPrefix": "chart-renovate/",
+    "prConcurrentLimit": 10,
+    "prHourlyLimit": 100,
+    "enabledManagers": [
+        "helm-values",  // https://docs.renovatebot.com/modules/manager/helm-values/#additional-information supports
+        "helmv3"
+    ],
+    "includePaths": [
+        "charts/scs/values.yaml",
+        "charts/scs/Chart.yaml"
+    ],
+    "packageRules": [
+        {
+            "matchManagers": ["helm-values", "helmv3"],
+            "matchDatasources": ["helm", "docker"],
+            "allowedVersions": "/^\\d+\\.\\d+\\.\\d-main-\\d+-[a-f0-9]{7,40}$/",
+            "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-main-(?<build>\\d+)-[a-f0-9]{7,40}$" 
+        }
+    ]
+}
