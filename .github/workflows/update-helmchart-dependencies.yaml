@@ -8,6 +8,9 @@ on:
       registry:
         required: true
         type: string
+      include-paths:
+        required: true
+        type: string
     secrets:
       renovate-bot-pat:
         required: true
@@ -44,6 +47,7 @@ jobs:
           RENOVATE_REPOSITORIES: ${{ github.repository }}
           RENOVATE_USERNAME: "midojenkins[bot]"
           RENOVATE_GIT_AUTHOR: "midojenkins <midojenkins[bot]@users.noreply.github.com>"
+          RENOVATE_INCLUDE_PATHS: ${{ inputs.include-paths }}
           # Needed to only run renovate for the chart
           RENOVATE_FORCE: "true"
           RENOVATE_ONBOARDING: "false"

@@ -6,10 +6,6 @@
         "helm-values",  // https://docs.renovatebot.com/modules/manager/helm-values/#additional-information supports
         "helmv3"
     ],
-    "includePaths": [
-        "charts/scs/values.yaml",
-        "charts/scs/Chart.yaml"
-    ],
     "packageRules": [
         {
             "matchManagers": ["helm-values", "helmv3"],
