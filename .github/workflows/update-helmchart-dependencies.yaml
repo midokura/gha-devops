@@ -35,10 +35,6 @@ jobs:
           repository: midokura/gha-devops
           ref: update-chart-deps-workflow
           path: reusable
-
-      - name: Debug
-        run: tree
-        
       - name: Run Renovate
         uses: renovatebot/github-action@v40.2.10
         env:
@@ -53,8 +49,7 @@ jobs:
           RENOVATE_ONBOARDING: "false"
           RENOVATE_REQUIRE_CONFIG: "ignored"
           RENOVATE_PLATFORM_COMMIT: "true"
-          # Set to debug for more traces
-          LOG_LEVEL: "${{ runner.debug == '1' && 'debug' || 'info' }}"
+          LOG_LEVEL: "debug" # Too little info without it
         with:
           configurationFile: reusable/.github/chart-renovate.json5
           token: ${{ secrets.renovate-bot-pat }}
