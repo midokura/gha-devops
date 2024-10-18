@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - main  
+    paths:
+      - .github/workflows/update-helmchart-dependencies.yaml
+      - .github/workflows/ci-update-helmchart-deps.yaml
+      - .github/chart-renovate.json5
   pull_request:
+      paths:
+      - .github/workflows/update-helmchart-dependencies.yaml
+      - .github/workflows/ci-update-helmchart-deps.yaml
+      - .github/chart-renovate.json5
 
 jobs:
   ci:
