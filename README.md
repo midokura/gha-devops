@@ -16,6 +16,11 @@ Each folder contains, at least, 2 files:
 
 So, **if you have some doubt about one GitHub Action, please go to the [GitHub Actions Index file](./gha.md) and read the corresponding 'README.md' file**.
 
+
+## Reusable Workflows
+
+You can find the documentation for the reusable workflows in the [GitHub Workflows file](./reusable-workflows.md).
+
 ### Develop new GitHub Action
 
 To develop a new GitHub Action and have propper documentation, please, don't forget to add a new README.md file in the new action folder, with the contents of the next template:

@@ -1,3 +1,4 @@
+---
 name: CI - Force renovate to inspect and upgrade relevant dependencies
 
 on:

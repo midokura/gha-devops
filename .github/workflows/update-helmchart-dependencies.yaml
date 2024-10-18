@@ -1,3 +1,4 @@
+---
 name: Force renovate to inspect and upgrade relevant dependencies
 on:
   workflow_call:
